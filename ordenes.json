@@ -1,0 +1,164 @@
+[
+    {
+        "producto": "Coca Cola",
+        "fecha": "2021-10-01",
+        "cantidad": 10,
+        "precio": 1000,
+        "proveedor": "Coca Cola",
+        "metodo_pago": "Efectivo",
+        "estado": "Entregado"
+    },
+    {
+        "producto": "blusa",
+        "fecha": "2021-10-01",
+        "cantidad": 10,
+        "precio": 1200,
+        "proveedor": "adidas",
+        "metodo_pago": "Efectivo",
+        "estado": "Entregado"
+    },
+    {
+        "producto": "lavadora",
+        "fecha": "2021-10-01",
+        "cantidad": 10,
+        "precio": 150000,
+        "proveedor": "mabe",
+        "metodo_pago": "Efectivo",
+        "estado": "Cancelado"
+    },
+    {
+        "producto": "Zapatos deportivos",
+        "fecha": "2021-10-02",
+        "cantidad": 8,
+        "precio": 1800,
+        "proveedor": "Nike",
+        "metodo_pago": "Tarjeta de crédito",
+        "estado": "Entregado"
+    },
+    {
+        "producto": "Refrigerador",
+        "fecha": "2021-10-02",
+        "cantidad": 1,
+        "precio": 25000,
+        "proveedor": "Samsung",
+        "metodo_pago": "Transferencia bancaria",
+        "estado": "Pendiente"
+    },
+    {
+        "producto": "Computadora portátil",
+        "fecha": "2021-10-03",
+        "cantidad": 3,
+        "precio": 50000,
+        "proveedor": "Dell",
+        "metodo_pago": "Efectivo",
+        "estado": "Entregado"
+    },
+    {
+        "producto": "Silla de oficina",
+        "fecha": "2021-10-03",
+        "cantidad": 5,
+        "precio": 1500,
+        "proveedor": "IKEA",
+        "metodo_pago": "Tarjeta de débito",
+        "estado": "Entregado"
+    },
+    {
+        "producto": "Smartphone",
+        "fecha": "2021-10-04",
+        "cantidad": 15,
+        "precio": 20000,
+        "proveedor": "Apple",
+        "metodo_pago": "Efectivo",
+        "estado": "En tránsito"
+    },
+    {
+        "producto": "Mesa de comedor",
+        "fecha": "2021-10-04",
+        "cantidad": 1,
+        "precio": 8000,
+        "proveedor": "Muebles Dico",
+        "metodo_pago": "Tarjeta de crédito",
+        "estado": "Entregado"
+    },
+    {
+        "producto": "Cámara digital",
+        "fecha": "2021-10-05",
+        "cantidad": 2,
+        "precio": 3000,
+        "proveedor": "Canon",
+        "metodo_pago": "Efectivo",
+        "estado": "Cancelado"
+    },
+    {
+        "producto": "Televisor",
+        "fecha": "2021-10-05",
+        "cantidad": 4,
+        "precio": 10000,
+        "proveedor": "Sony",
+        "metodo_pago": "Transferencia bancaria",
+        "estado": "Entregado"
+    },
+    {
+        "producto": "Audífonos inalámbricos",
+        "fecha": "2021-10-06",
+        "cantidad": 20,
+        "precio": 500,
+        "proveedor": "JBL",
+        "metodo_pago": "Efectivo",
+        "estado": "Entregado"
+    },
+    {
+        "producto": "Impresora",
+        "fecha": "2021-10-06",
+        "cantidad": 6,
+        "precio": 1500,
+        "proveedor": "HP",
+        "metodo_pago": "Tarjeta de débito",
+        "estado": "Entregado"
+    },
+    {
+        "producto": "Tablet",
+        "fecha": "2021-10-07",
+        "cantidad": 10,
+        "precio": 3000,
+        "proveedor": "Samsung",
+        "metodo_pago": "Efectivo",
+        "estado": "En tránsito"
+    },
+    {
+        "producto": "Reloj inteligente",
+        "fecha": "2021-10-07",
+        "cantidad": 12,
+        "precio": 1500,
+        "proveedor": "Garmin",
+        "metodo_pago": "Tarjeta de crédito",
+        "estado": "Entregado"
+    },
+    {
+        "producto": "Bocina Bluetooth",
+        "fecha": "2021-10-08",
+        "cantidad": 15,
+        "precio": 800,
+        "proveedor": "Sony",
+        "metodo_pago": "Efectivo",
+        "estado": "Entregado"
+    },
+    {
+        "producto": "Teclado inalámbrico",
+        "fecha": "2021-10-08",
+        "cantidad": 10,
+        "precio": 500,
+        "proveedor": "Logitech",
+        "metodo_pago": "Tarjeta de débito",
+        "estado": "Entregado"
+    },
+    {
+        "producto": "Mochila",
+        "fecha": "2021-10-09",
+        "cantidad": 20,
+        "precio": 400,
+        "proveedor": "Nike",
+        "metodo_pago": "Efectivo",
+        "estado": "En tránsito"
+    }
+]

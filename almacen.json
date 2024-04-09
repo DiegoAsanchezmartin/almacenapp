@@ -1,0 +1,282 @@
+[
+    {
+        "producto": "Reloj deportivo",
+        "categoria": "relojes",
+        "stock": 50,
+        "precio": 79.99,
+        "status": "poco stock"
+    },
+    {
+        "producto": "Arroz integral",
+        "categoria": "abarrotes",
+        "stock": 100,
+        "precio": 2.49,
+        "status": "disponible"
+    },
+    {
+        "producto": "Teléfono móvil",
+        "categoria": "telefonos",
+        "stock": 20,
+        "precio": 599.99,
+        "status": "agotado"
+    },
+    {
+        "producto": "Licuadora multifuncional",
+        "categoria": "electrodomesticos",
+        "stock": 30,
+        "precio": 49.99,
+        "status": "solicitado"
+    },
+    {
+        "producto": "Camiseta básica",
+        "categoria": "ropa",
+        "stock": 80,
+        "precio": 9.99,
+        "status": "disponible"
+    },
+    {
+        "producto": "Frijoles en lata",
+        "categoria": "abarrotes",
+        "stock": 75,
+        "precio": 1.99,
+        "status": "retirado"
+    },
+    {
+        "producto": "Smartwatch deportivo",
+        "categoria": "relojes",
+        "stock": 15,
+        "precio": 129.99,
+        "status": "poco stock"
+    },
+    {
+        "producto": "Aceite de coco",
+        "categoria": "abarrotes",
+        "stock": 90,
+        "precio": 8.99,
+        "status": "disponible"
+    },
+    {
+        "producto": "Refrigerador de dos puertas",
+        "categoria": "electrodomesticos",
+        "stock": 10,
+        "precio": 999.99,
+        "status": "agotado"
+    },
+    {
+        "producto": "Jeans de mezclilla",
+        "categoria": "ropa",
+        "stock": 60,
+        "precio": 29.99,
+        "status": "disponible"
+    },
+    {
+        "producto": "Cereal de avena",
+        "categoria": "abarrotes",
+        "stock": 120,
+        "precio": 3.99,
+        "status": "solicitado"
+    },
+    {
+        "producto": "Televisión 4K",
+        "categoria": "electrodomesticos",
+        "stock": 5,
+        "precio": 1499.99,
+        "status": "agotado"
+    },
+    {
+        "producto": "Vestido de fiesta",
+        "categoria": "ropa",
+        "stock": 30,
+        "precio": 99.99,
+        "status": "poco stock"
+    },
+    {
+        "producto": "Café orgánico",
+        "categoria": "abarrotes",
+        "stock": 65,
+        "precio": 6.99,
+        "status": "disponible"
+    },
+    {
+        "producto": "Microondas con grill",
+        "categoria": "electrodomesticos",
+        "stock": 25,
+        "precio": 89.99,
+        "status": "disponible"
+    },
+    {
+        "producto": "Blusa elegante",
+        "categoria": "ropa",
+        "stock": 40,
+        "precio": 39.99,
+        "status": "disponible"
+    },
+    {
+        "producto": "Leche descremada",
+        "categoria": "abarrotes",
+        "stock": 85,
+        "precio": 2.99,
+        "status": "disponible"
+    },
+    {
+        "producto": "Lavadora de carga frontal",
+        "categoria": "electrodomesticos",
+        "stock": 8,
+        "precio": 699.99,
+        "status": "poco stock"
+    },
+    {
+        "producto": "Pantalón de vestir",
+        "categoria": "ropa",
+        "stock": 45,
+        "precio": 49.99,
+        "status": "disponible"
+    },
+    {
+        "producto": "Miel de abeja",
+        "categoria": "abarrotes",
+        "stock": 70,
+        "precio": 5.99,
+        "status": "disponible"
+    },
+    {
+        "producto": "Secadora de ropa",
+        "categoria": "electrodomesticos",
+        "stock": 12,
+        "precio": 599.99,
+        "status": "poco stock"
+    },
+    {
+        "producto": "Blusa casual",
+        "categoria": "ropa",
+        "stock": 50,
+        "precio": 19.99,
+        "status": "disponible"
+    },
+    {
+        "producto": "Pasta de dientes",
+        "categoria": "abarrotes",
+        "stock": 110,
+        "precio": 1.49,
+        "status": "disponible"
+    },
+    {
+        "producto": "Horno de microondas",
+        "categoria": "electrodomesticos",
+        "stock": 20,
+        "precio": 79.99,
+        "status": "disponible"
+    },
+    {
+        "producto": "Traje de baño",
+        "categoria": "ropa",
+        "stock": 35,
+        "precio": 29.99,
+        "status": "disponible"
+    },
+    {
+        "producto": "Papel higiénico",
+        "categoria": "abarrotes",
+        "stock": 95,
+        "precio": 0.99,
+        "status": "disponible"
+    },
+    {
+        "producto": "Estufa de gas",
+        "categoria": "electrodomesticos",
+        "stock": 15,
+        "precio": 399.99,
+        "status": "poco stock"
+    },
+    {
+        "producto": "Blusa de mezclilla",
+        "categoria": "ropa",
+        "stock": 55,
+        "precio": 24.99,
+        "status": "disponible"
+    },
+    {
+        "producto": "Galletas de avena",
+        "categoria": "abarrotes",
+        "stock": 80,
+        "precio": 2.49,
+        "status": "disponible"
+    },
+    {
+        "producto": "Batidora de mano",
+        "categoria": "electrodomesticos",
+        "stock": 35,
+        "precio": 29.99,
+        "status": "disponible"
+    },
+    {
+        "producto": "Blusa de tirantes",
+        "categoria": "ropa",
+        "stock": 60,
+        "precio": 14.99,
+        "status": "disponible"
+    },
+    {
+        "producto": "Cereal de maíz",
+        "categoria": "abarrotes",
+        "stock": 70,
+        "precio": 2.99,
+        "status": "disponible"
+    },
+    {
+        "producto": "Licuadora de vaso",
+        "categoria": "electrodomesticos",
+        "stock": 40,
+        "precio": 39.99,
+        "status": "disponible"
+    },
+    {
+        "producto": "Blusa de manga larga",
+        "categoria": "ropa",
+        "stock": 50,
+        "precio": 19.99,
+        "status": "disponible"
+    },
+    {
+        "producto": "Cereal de arroz",
+        "categoria": "abarrotes",
+        "stock": 60,
+        "precio": 3.49,
+        "status": "disponible"
+    },
+    {
+        "producto": "Cafetera de goteo",
+        "categoria": "electrodomesticos",
+        "stock": 30,
+        "precio": 49.99,
+        "status": "disponible"
+    },
+    {
+        "producto": "Blusa de encaje",
+        "categoria": "ropa",
+        "stock": 40,
+        "precio": 29.99,
+        "status": "disponible"
+    },
+    {
+        "producto": "Cereal de trigo",
+        "categoria": "abarrotes",
+        "stock": 50,
+        "precio": 3.99,
+        "status": "disponible"
+    },
+    {
+        "producto": "Licuadora de inmersión",
+        "categoria": "electrodomesticos",
+        "stock": 25,
+        "precio": 34.99,
+        "status": "disponible"
+    },
+    {
+        "producto": "Blusa de algodón",
+        "categoria": "ropa",
+        "stock": 45,
+        "precio": 19.99,
+        "status": "disponible"
+    }
+]
