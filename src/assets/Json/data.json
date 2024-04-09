@@ -1,0 +1,35 @@
+{
+    "ventasUltimos7Dias": [
+      {"fecha": "Sept 10", "ventas": 100000},
+      {"fecha": "Sept 11", "ventas": 80000},
+      {"fecha": "Sept 12", "ventas": 60000},
+      {"fecha": "Sept 13", "ventas": 40000},
+      {"fecha": "Sept 14", "ventas": 20000},
+      {"fecha": "Sept 15", "ventas": 30000},
+      {"fecha": "Sept 16", "ventas": 50000}
+    ],
+    "ordenesRecientes": [
+      {"fecha": "12 Sept 2022", "cantidad": 1},
+      {"fecha": "13 Sept 2022", "cantidad": 2},
+      {"fecha": "14 Sept 2022", "cantidad": 3},
+      {"fecha": "15 Sept 2022", "cantidad": 4},
+      {"fecha": "16 Sept 2022", "cantidad": 5}
+    ],
+    "primerasEntradas": [
+      {"fecha": "Sept 10", "cantidad": 50},
+      {"fecha": "Sept 11", "cantidad": 40},
+      {"fecha": "Sept 12", "cantidad": 30},
+      {"fecha": "Sept 13", "cantidad": 20},
+      {"fecha": "Sept 14", "cantidad": 10},
+      {"fecha": "Sept 15", "cantidad": 15},
+      {"fecha": "Sept 16", "cantidad": 25}
+    ],
+    "primerasSalidas": [
+      {"fecha": "12 Sept 2022", "cantidad": 5},
+      {"fecha": "13 Sept 2022", "cantidad": 4},
+      {"fecha": "14 Sept 2022", "cantidad": 3},
+      {"fecha": "15 Sept 2022", "cantidad": 2},
+      {"fecha": "16 Sept 2022", "cantidad": 1}
+    ]
+  }
+  
