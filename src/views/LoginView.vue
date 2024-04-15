@@ -4,7 +4,7 @@
       <form @submit.prevent="login">
         <div class="form-group">
           <label for="name">Nombre de usuario</label>
-          <input type="text" class="form-control" id="name" v-model="name" placeholder="Nombre de usuario" required>
+          <input type="text" class="form-control" id="name" v-model="username" placeholder="Nombre de usuario" required>
         </div>
         <div class="form-group">
           <label for="password">Contraseña</label>
@@ -23,21 +23,15 @@
   import { ref } from 'vue';
   
   const Service = Services;
-  const name = ref('');
+  const username = ref('');
   const password = ref('');
   
   const login = async () => {
-    if (name.value && password.value) {
-      const token = await Service.login(name.value, password.value);
-      if (token) {
-        // Guardar el token en localStorage
-        localStorage.setItem('token', token);
-        console.log('Inicio de sesión exitoso. Token:', token);
-      } else {
-        console.error('Credenciales incorrectas');
-      }
-    } else {
-      console.error('Por favor, complete todos los campos');
+    try {
+      const response = await Service.login(username.value, password.value);
+      console.log('Inicio de sesión exitoso', response);
+    } catch (error) {
+      console.error('Error al iniciar sesión', error);
     }
   };
   
