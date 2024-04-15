@@ -6,6 +6,69 @@
         "precio": 1000,
         "proveedor": "Coca Cola",
         "metodo_pago": "Efectivo",
+        "estado": "Vendido"
+    },
+    {
+        "producto": "Coca Cola",
+        "fecha": "2021-10-01",
+        "cantidad": 1,
+        "precio": 1000,
+        "proveedor": "Coca Cola",
+        "metodo_pago": "Efectivo",
+        "estado": "Entregado"
+    },
+    {
+        "producto": "Coca Cola",
+        "fecha": "2021-10-01",
+        "cantidad": 10,
+        "precio": 1000,
+        "proveedor": "Coca Cola",
+        "metodo_pago": "Efectivo",
+        "estado": "Entregado"
+    },
+    {
+        "producto": "Pepsi",
+        "fecha": "2021-10-01",
+        "cantidad": 10,
+        "precio": 1000,
+        "proveedor": "Pepsi",
+        "metodo_pago": "Efectivo",
+        "estado": "Entregado"
+    },
+    {
+        "producto": "Pepsi",
+        "fecha": "2021-10-01",
+        "cantidad": 10,
+        "precio": 1000,
+        "proveedor": "Pepsi",
+        "metodo_pago": "Efectivo",
+        "estado": "Entregado"
+    },
+    {
+        "producto": "Pepsi",
+        "fecha": "2021-10-01",
+        "cantidad": 10,
+        "precio": 1000,
+        "proveedor": "Pepsi",
+        "metodo_pago": "Efectivo",
+        "estado": "Entregado"
+    },
+    {
+        "producto": "Pepsi",
+        "fecha": "2021-10-01",
+        "cantidad": 10,
+        "precio": 1000,
+        "proveedor": "Pepsi",
+        "metodo_pago": "Efectivo",
+        "estado": "Entregado"
+    },
+    {
+        "producto": "Pepsi",
+        "fecha": "2021-10-01",
+        "cantidad": 10,
+        "precio": 1000,
+        "proveedor": "Pepsi",
+        "metodo_pago": "Efectivo",
         "estado": "Entregado"
     },
     {
@@ -141,7 +204,7 @@
         "precio": 800,
         "proveedor": "Sony",
         "metodo_pago": "Efectivo",
-        "estado": "Entregado"
+        "estado": "Vendido"
     },
     {
         "producto": "Teclado inalámbrico",
@@ -150,7 +213,7 @@
         "precio": 500,
         "proveedor": "Logitech",
         "metodo_pago": "Tarjeta de débito",
-        "estado": "Entregado"
+        "estado": "Vendido"
     },
     {
         "producto": "Mochila",
@@ -159,6 +222,15 @@
         "precio": 400,
         "proveedor": "Nike",
         "metodo_pago": "Efectivo",
-        "estado": "En tránsito"
+        "estado": "Vendido"
+    },
+    {
+        "producto": "Mochila",
+        "fecha": "2021-10-09",
+        "cantidad": 10,
+        "precio": 400,
+        "proveedor": "Nike",
+        "metodo_pago": "Efectivo",
+        "estado": "Entregado"
     }
 ]
