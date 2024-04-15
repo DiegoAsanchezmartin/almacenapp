@@ -6,6 +6,11 @@
 <script setup lang="ts">
 import Product from '@/components/pbd.vue';
 </script>
-<style>
-    
-</style>
+
+  
+  
+  
+  
+  <style scoped>
+  </style>
+  

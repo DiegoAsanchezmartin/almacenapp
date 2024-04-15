@@ -9,6 +9,9 @@
         <li class="nav-item"><router-link to="/productos">Productos</router-link></li>
         <li class="nav-item"><router-link to="/ordenes">Administración de Ordenes</router-link></li>
         <li class="nav-item"><router-link to="/reportes">Reportes</router-link></li>
+        <li class="nav-item"><router-link to="/login">Login</router-link></li>
+
+
       </ul>
     </nav>
   </div>
