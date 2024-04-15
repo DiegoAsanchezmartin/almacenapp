@@ -31,6 +31,11 @@ const router = createRouter({
       path:'/reportes',
       name: 'reportes',
       component: () => import('../views/ReporteView.vue')
+    },
+    {
+      path:'/formulario',
+      name: 'formulario',
+      component: () => import('../components/FormComponent.vue')
     }
   ]
 })
