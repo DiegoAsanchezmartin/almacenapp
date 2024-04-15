@@ -1,9 +1,11 @@
 // Productos.ts
-export interface Product {
-    producto: string;
+export interface Producto {
+    id : string;
+    nombre: string;
+    descripcion: string;
+    precio: number;
     categoria: string;
     stock: number;
-    precio: number;
-    status: string;
+    status: 'Disponible' | 'No disponible';
 }
   
