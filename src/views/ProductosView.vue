@@ -1,13 +1,12 @@
+<template >
+    <div>
+        <Product> </Product>
+    </div>
+</template>
 <script setup lang="ts">
-  import FormComponent from '@/components/FormComponent.vue';
+import Product from '@/components/pbd.vue';
 </script>
 
-<template>
-    <div>
-      <h1>Productos</h1>
-      <FormComponent />
-    </div>
-  </template>
   
   
   

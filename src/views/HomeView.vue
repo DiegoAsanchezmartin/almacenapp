@@ -47,7 +47,7 @@
 import { ref, onMounted, nextTick } from 'vue';
 import { Chart, registerables } from 'chart.js';
 import Sidebar from '@/components/Sidebar.vue';
-import { getData } from '@/service/DataService.js';
+import { getData } from '@/service/DataService.ts';
 
 Chart.register(...registerables);
 
@@ -84,7 +84,7 @@ const createVentasChart = (data) => {
 const createEntradasChart = (data) => {
   const ctx = document.getElementById('entradasChart').getContext('2d');
   new Chart(ctx, {
-    type: 'line',
+    type: 'pie',
     data: {
       labels: data.map(entrada => entrada.fecha),
       datasets: [{

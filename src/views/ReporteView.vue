@@ -1,11 +1,18 @@
-<template >
-    <div>
-        
-    </div>
-</template>
-<script setup lang="ts">
-
+<template>
+    <div class="hola"></div>
+    <Dashboard />
+  </template>
+  
+  <script setup lang="ts">
+  import Dashboard from '@/components/Dashboard.vue';
 </script>
-<style>
-    
-</style>
+
+  
+  
+  <style scoped>
+  .hola {
+    margin-left: -100px;
+  }
+  
+  </style>
+  

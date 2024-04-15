@@ -91,6 +91,7 @@
         "status": "poco stock"
     },
     {
+        
         "producto": "Café orgánico",
         "categoria": "abarrotes",
         "stock": 65,
@@ -277,6 +278,13 @@
         "categoria": "ropa",
         "stock": 45,
         "precio": 19.99,
+        "status": "disponible"
+    },
+    {
+        "producto": "Boxer de Caballero",
+        "categoria": "ropa",
+        "stock": 5,
+        "precio": 89.99,
         "status": "disponible"
     }
 ]
