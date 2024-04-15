@@ -28,10 +28,10 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="producto in datos.productos" :key="producto.nombre">
-              <td>{{ producto.nombre }}</td>
-              <td>{{ producto.vendidos }}</td>
-              <td>{{ producto.comprados }}</td>
+            <tr v-for="producto in datos.productos" :key="producto.producto">
+              <td>{{ producto.producto }}</td>
+              <td>{{ producto.estado }}</td> <!-- Mostrar el estado en lugar de 'vendidos' -->
+              <td>{{ producto.cantidad }}</td> <!-- Mostrar la cantidad en lugar de 'comprados' -->
               <td>{{ producto.diferencia }}</td>
             </tr>
           </tbody>
@@ -49,15 +49,9 @@ import type { Orden } from '@/interfaces/reportTypes';
 
 Chart.register(...registerables);
 
-interface Producto {
-  nombre: string;
-  vendidos: number;
-  comprados: number;
-  diferencia: number;
-}
 
 const datos = ref({
-  productos: [] as Producto[],
+  productos: [] as Orden[],
   estados: {} as Record<string, number>,
   proveedores: {},
 });
@@ -79,34 +73,33 @@ onMounted(async () => {
 });
 
 function processData(reportData: any[]) {
-  const productos: Producto[] = [];
-  const productMap = new Map<string, { vendidos: number, comprados: number }>();
-  
+  const productos: Orden[] = [];
+  const productMap = new Map<string, { comprados: number, vendidos: number }>(); // Cambio de orden de los campos
+
   for (const item of reportData) {
     const { producto, cantidad, estado } = item;
     if (!productMap.has(producto)) {
-      productMap.set(producto, { vendidos: 0, comprados: 0 });
+      productMap.set(producto, { comprados: 0, vendidos: 0 });
     }
     const product = productMap.get(producto)!;
-    if (estado === 'Vendido') {
+    if (estado === 'En proceso') { // Cambio de 'Vendido' a 'En proceso'
+      product.comprados += cantidad; // Cambio de 'vendidos' a 'comprados'
+    } else if (estado === 'Vendido') { // Nuevo caso para 'Vendido'
       product.vendidos += cantidad;
-    } else if (estado === 'Entregado') {
-      product.comprados += cantidad;
     }
   }
-  
-  for (const [producto, { vendidos, comprados }] of productMap.entries()) {
-    const diferencia = vendidos - comprados;
-    productos.push({ nombre: producto, vendidos, comprados, diferencia });
+
+  for (const [producto, { comprados, vendidos }] of productMap.entries()) {
+    const diferencia = comprados - vendidos; // Cambio de vendidos - comprados a comprados - vendidos
+    productos.push({ id: 0, producto, estado: '', cantidad: 0, fecha: '', precio: 0, proveedor: '', metodo_pago: '', diferencia }); // Actualizado la creación del objeto Orden
   }
-  
+
   return productos;
 }
 
-
 function processEstados(reportData: any[]) {
   const estados: Record<string, number> = {};
-  
+
   for (const item of reportData) {
     const { estado } = item;
     if (!estados[estado]) {
@@ -114,7 +107,7 @@ function processEstados(reportData: any[]) {
     }
     estados[estado]++;
   }
-  
+
   return estados;
 }
 
@@ -136,23 +129,23 @@ function createChart() {
   const ventasCtx = (document.getElementById('ventasChart') as HTMLCanvasElement)?.getContext('2d');
   const estadoCtx = (document.getElementById('estadoChart') as HTMLCanvasElement)?.getContext('2d');
   const proveedoresCtx = (document.getElementById('proveedoresChart') as HTMLCanvasElement)?.getContext('2d');
-  
+
   if (ventasCtx && estadoCtx && proveedoresCtx) {
     new Chart(ventasCtx, {
       type: 'bar',
       data: {
-        labels: datos.value.productos.map(producto => producto.nombre),
+        labels: datos.value.productos.map(producto => producto.producto),
         datasets: [
           {
             label: 'Ventas',
-            data: datos.value.productos.map(producto => producto.vendidos),
+            data: datos.value.productos.map(producto => producto.estado), // Aquí vendrían los 'vendidos'
             backgroundColor: 'rgba(75, 192, 192, 0.2)',
             borderColor: 'rgba(75, 192, 192, 1)',
             borderWidth: 1,
           },
           {
             label: 'Compras',
-            data: datos.value.productos.map(producto => producto.comprados),
+            data: datos.value.productos.map(producto => producto.cantidad), // Aquí vendrían los 'comprados'
             backgroundColor: 'rgba(153, 102, 255, 0.2)',
             borderColor: 'rgba(153, 102, 255, 1)',
             borderWidth: 1,
@@ -167,7 +160,7 @@ function createChart() {
         },
       } as ChartOptions<'bar'>,
     });
-    
+
     new Chart(estadoCtx, {
       type: 'doughnut',
       data: {
