@@ -25,5 +25,34 @@ export default {
       console.error('Error al autenticar:', (error as Error).message);
       return null;
     }
+  },
+
+
+// metodo para validar el token de acceso apuntando a la ruta /protected
+  async validateToken(): Promise<boolean> {
+    try {
+      const response = await fetch(`${api_url}/protected`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error('Token de acceso inválido');
+      }
+
+      return true;
+    } catch (error) {
+      console.error('Error al validar token:', (error as Error).message);
+      return false;
+    }
   }
+
+
+
+  
+
+
+
 };

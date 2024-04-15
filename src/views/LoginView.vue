@@ -21,6 +21,7 @@
   <script setup lang="ts">
   import Services from '@/service/Services';
   import { ref } from 'vue';
+  import  router from '@/router'; 
   
   const Service = Services;
   const username = ref('');
@@ -30,6 +31,7 @@
     try {
       const response = await Service.login(username.value, password.value);
       console.log('Inicio de sesión exitoso', response);
+      router.push({ name: 'home' });
     } catch (error) {
       console.error('Error al iniciar sesión', error);
     }

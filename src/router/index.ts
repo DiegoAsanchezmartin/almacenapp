@@ -34,5 +34,13 @@ const router = createRouter({
     }
   ]
 })
+//guardian de rutas con el metodo beforeEach y usando el metodo validateToken de Services.ts
+router.beforeEach(async (to, from, next) => {
+  if (to.name !== 'login' && !localStorage.getItem('accessToken')) {
+    next({ name: 'login' });
+  } else {
+    next();
+  }
+});
 
 export default router
