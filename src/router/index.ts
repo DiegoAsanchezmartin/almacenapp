@@ -12,9 +12,10 @@ const router = createRouter({
     },
 
     {
+      //login se debe comportar como independiente de las demas rutas para que no se vea el menu
       path: '/login',
       name: 'login',
-      component: LoginView
+      component: () => import('../views/LoginView.vue')
     },
 
     {

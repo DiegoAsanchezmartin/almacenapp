@@ -45,6 +45,7 @@ const login = async () => {
 const cancel = () => {
   console.log('Inicio de sesión cancelado');
 };
+
 </script>
 
 <style scoped>

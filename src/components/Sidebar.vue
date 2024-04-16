@@ -9,10 +9,8 @@
         <li class="nav-item"><router-link to="/productos">Productos</router-link></li>
         <li class="nav-item"><router-link to="/ordenes">Administración de Ordenes</router-link></li>
         <li class="nav-item"><router-link to="/reportes">Reportes</router-link></li>
-        <li class="nav-item"><router-link to="/login">Login</router-link></li>
-
-
-
+        <!-- Boton para cerrar sesion -->
+        <li class="nav-item"><button @click="cerrarSesion">Cerrar sesión</button></li>
 
       </ul>
     </nav>
@@ -21,6 +19,20 @@
 
 <script setup>
 import { RouterLink } from 'vue-router';
+import Services from '@/service/Services';
+
+const Service = Services;
+
+//metodo para cerrar sesion
+const cerrarSesion = async () => {
+  try {
+    const response = await Service.logout();
+    console.log('Sesión cerrada', response);
+    router.push({ name: 'login' });
+  } catch (error) {
+    console.error('Error al cerrar sesión', error);
+  }
+};
 </script>
 
 <style scoped>
