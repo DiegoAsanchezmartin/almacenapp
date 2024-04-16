@@ -44,23 +44,23 @@
 <script setup lang="ts">
 import { ref, onMounted, nextTick } from 'vue';
 import { Chart, type ChartData, type ChartOptions, registerables } from 'chart.js';
-import { getReportData } from '@/service/ReportService';
+import { getProductos, getReportData } from '@/service/ReportService';
 import type { Orden } from '@/interfaces/reportTypes';
 
 Chart.register(...registerables);
 
-
 const datos = ref({
   productos: [] as Orden[],
   estados: {} as Record<string, number>,
-  proveedores: {},
+  proveedores: {} as Record<string, number>,
 });
 
 onMounted(async () => {
   try {
     const reportData = await getReportData();
-    if (reportData) {
-      datos.value.productos = processData(reportData);
+    const productosData = await getProductos();
+    if (reportData && productosData) {
+      datos.value.productos = processData(reportData, productosData);
       datos.value.estados = processEstados(reportData);
       datos.value.proveedores = processProveedores(reportData);
       nextTick(() => {
@@ -72,9 +72,8 @@ onMounted(async () => {
   }
 });
 
-function processData(reportData: any[]) {
-  const productos: Orden[] = [];
-  const productMap = new Map<string, { comprados: number, vendidos: number }>(); // Cambio de orden de los campos
+function processData(reportData: any[], productosData: any[]) {
+  const productMap = new Map<string, { comprados: number, vendidos: number }>();
 
   for (const item of reportData) {
     const { producto, cantidad, estado } = item;
@@ -82,16 +81,17 @@ function processData(reportData: any[]) {
       productMap.set(producto, { comprados: 0, vendidos: 0 });
     }
     const product = productMap.get(producto)!;
-    if (estado === 'En proceso') { // Cambio de 'Vendido' a 'En proceso'
-      product.comprados += cantidad; // Cambio de 'vendidos' a 'comprados'
-    } else if (estado === 'Vendido') { // Nuevo caso para 'Vendido'
+    if (estado === 'En proceso') {
+      product.comprados += cantidad;
+    } else if (estado === 'Vendido') {
       product.vendidos += cantidad;
     }
   }
 
+  const productos: Orden[] = [];
   for (const [producto, { comprados, vendidos }] of productMap.entries()) {
-    const diferencia = comprados - vendidos; // Cambio de vendidos - comprados a comprados - vendidos
-    productos.push({ id: 0, producto, estado: '', cantidad: 0, fecha: '', precio: 0, proveedor: '', metodo_pago: '', diferencia }); // Actualizado la creación del objeto Orden
+    const diferencia = comprados - vendidos;
+    productos.push({ id: 0, producto, estado: '', cantidad: 0, fecha: '', precio: 0, proveedor: '', metodo_pago: '', diferencia });
   }
 
   return productos;
@@ -114,13 +114,13 @@ function processEstados(reportData: any[]) {
 function processProveedores(reportData: any[]) {
   const proveedores: Record<string, number> = {};
 
-  reportData.forEach(item => {
+  for (const item of reportData) {
     const { proveedor, cantidad } = item;
     if (!proveedores[proveedor]) {
       proveedores[proveedor] = 0;
     }
     proveedores[proveedor] += cantidad;
-  });
+  }
 
   return proveedores;
 }
@@ -215,9 +215,11 @@ function createChart() {
 <style>
 .dashboard-container {
   display: flex;
+  flex-direction: column; /* Cambia a disposición vertical */
   gap: 20px;
   margin-left: 280px;
-  width: calc(100% - 280px);
+  width: calc(100% - 280px); /* Ajusta el ancho según sea necesario */
+  min-width: 1000px; /* Establece un ancho mínimo para mantener */
   min-height: 100vh;
   transition: margin-left 0.5s;
 }
@@ -235,6 +237,7 @@ function createChart() {
 
 .tabla-productos {
   flex: 1;
+  overflow-x: auto; /* Añade desplazamiento horizontal */
 }
 
 .tabla-productos table {
@@ -251,5 +254,8 @@ function createChart() {
 
 .tabla-productos th {
   background-color: #f2f2f2;
+}
+.sidebar {
+  transition: none; /* Eliminar la transición del ancho */
 }
 </style>

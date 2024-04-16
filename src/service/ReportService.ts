@@ -15,3 +15,16 @@ export const getReportData = async () => {
     return null;
   }
 };
+
+// API para obtener los productos
+export const getProductos = async () => {
+  try {
+    const response = await fetch('http://187.157.236.135:5000/productos');
+    if (!response.ok) throw new Error('Error al obtener productos');
+    return await response.json();
+  } catch (error) {
+    console.error("Error al cargar productos: ", error);
+    return [];
+  }
+};
+
