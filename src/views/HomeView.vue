@@ -1,195 +1,204 @@
 <template>
-  <div class="app-container">
-    <Sidebar class="app-sidebar" />
-    <div class="dashboard-container">
-      <div class="dashboard-header">
-        <h1>Dashboard</h1>
+  <div class="dashboard">
+    <h1>Dashboard</h1>
+    
+    <!-- Sección de gráficas -->
+    <div class="charts-section">
+      <div class="chart">
+        <h2>Fechas</h2>
+        <canvas id="polarAreaChart"></canvas>
       </div>
+      <div class="chart">
+        <h2>Ventas</h2>
+        <canvas id="stackedChart"></canvas>
+      </div>
+      <div class="chart">
+        <h2>Stock</h2>
+        <canvas id="doughnutChart"></canvas>
+      </div>
+    </div>
+
+    <!-- Sección de datos de pedidos -->
+    <div class="data-section">
+      <h2>Pedidos</h2>
       <div class="data-cards">
-        <div class="card ventas">
-          <h2>Sumatoria - Ventas</h2>
-          <div v-for="(venta, index) in datos.ventasUltimos7Dias" :key="index" class="data-item venta-item">
-            <p>{{ venta.fecha }}: {{ venta.ventas }}</p>
-          </div>
-        </div>
-        <div class="card primeras-entradas">
-          <h2>Primeras Entradas</h2>
-          <div v-for="(entrada, index) in datos.primerasEntradas" :key="index" class="data-item entrada-item">
-            <p>{{ entrada.fecha }}: {{ entrada.cantidad }}</p>
-          </div>
-        </div>
-        <div class="card primeras-salidas">
-          <h2>Primeras Salidas</h2>
-          <div v-for="(salida, index) in datos.primerasSalidas" :key="index" class="data-item salida-item">
-            <p><strong>Fecha:</strong> {{ salida.fecha }} - <strong>Cantidad:</strong> {{ salida.cantidad }}</p>
+        <div class="card-container">
+          <div class="card" v-for="(pedido, index) in pedidos" :key="'pedido-' + index">
+            <p><strong>Producto:</strong> {{ pedido.nombre }}</p>
+            <p><strong>Cantidad:</strong> {{ pedido.cantidad }}</p>
+            <p><strong>Precio:</strong> {{ pedido.precio }}</p>
+            <p><strong>Proveedor:</strong> {{ pedido.proveedor }}</p>
+            <p><strong>Método de pago:</strong> {{ pedido.metodo_pago }}</p>
+            <p><strong>Estado:</strong> {{ pedido.estado }}</p>
+            <p><strong>Fecha:</strong> {{ pedido.fecha }}</p>
           </div>
         </div>
       </div>
-      <div class="graficas-container">
-        <div class="grafica-ventas">
-          <h2>Ventas Últimos 7 Días</h2>
-          <canvas id="ventasChart"></canvas>
-        </div>
-        <div class="grafica-entradas">
-          <h2>Primeras Entradas</h2>
-          <canvas id="entradasChart"></canvas>
-        </div>
-        <div class="grafica-salidas">
-          <h2>Primeras Salidas</h2>
-          <canvas id="salidasChart"></canvas>
+    </div>
+    
+    <!-- Sección de datos de productos -->
+    <div class="data-section">
+      <h2>Productos</h2>
+      <div class="data-cards">
+        <div class="card-container">
+          <div class="card" v-for="(producto, index) in productos" :key="'producto-' + index">
+            <p><strong>Nombre:</strong> {{ producto.nombre }}</p>
+            <p><strong>Precio:</strong> {{ producto.precio }}</p>
+            <p><strong>Categoría:</strong> {{ producto.categoria }}</p>
+            <p><strong>Stock:</strong> {{ producto.stock }}</p>
+            <p><strong>status:</strong> {{ producto.status }}</p>
+          </div>
         </div>
       </div>
     </div>
   </div>
 </template>
 
-<script setup>
-import { ref, onMounted, nextTick } from 'vue';
+<script setup lang="ts">
+import { ref, onMounted } from 'vue';
+import { getData } from '@/service/DataService';
 import { Chart, registerables } from 'chart.js';
-import Sidebar from '@/components/Sidebar.vue';
-import { getData } from '@/service/DataService.ts';
 
-Chart.register(...registerables);
+Chart.register(...registerables); // Registra todas las funcionalidades necesarias de Chart.js
 
-const datos = ref({
-  ventasUltimos7Dias: [],
-  primerasEntradas: [],
-  primerasSalidas: []
-});
+const pedidos = ref([]);
+const productos = ref([]);
+let polarAreaChart: Chart | null = null;
+let stackedChart: Chart | null = null;
+let doughnutChart: Chart | null = null;
 
-const createVentasChart = (data) => {
-  const ctx = document.getElementById('ventasChart').getContext('2d');
-  new Chart(ctx, {
-    type: 'line',
-    data: {
-      labels: data.map(venta => venta.fecha),
-      datasets: [{
-        label: 'Ventas Últimos 7 Días',
-        data: data.map(venta => venta.ventas),
-        fill: false,
-        borderColor: 'rgb(75, 192, 192)',
-        tension: 0.1
-      }]
-    },
-    options: {
-      scales: {
-        y: {
-          beginAtZero: true
+const renderPolarAreaChart = () => {
+  const ctx = document.getElementById('polarAreaChart') as HTMLCanvasElement | null;
+  if (ctx) {
+    polarAreaChart = new Chart(ctx, {
+      type: 'polarArea',
+      data: {
+        labels: pedidos.value.map((pedido: any) => pedido.fecha),
+        datasets: [{
+          label: 'Cantidad de pedidos',
+          data: pedidos.value.map((pedido: any) => pedido.cantidad),
+          backgroundColor: 'rgba(255, 99, 132, 0.5)',
+          borderColor: 'rgb(255, 99, 132)',
+          borderWidth: 1
+        }]
+      },
+      options: {
+        scales: {
+          y: {
+            beginAtZero: true
+          }
         }
       }
-    }
-  });
+    });
+  }
 };
 
-const createEntradasChart = (data) => {
-  const ctx = document.getElementById('entradasChart').getContext('2d');
-  new Chart(ctx, {
-    type: 'pie',
-    data: {
-      labels: data.map(entrada => entrada.fecha),
-      datasets: [{
-        label: 'Primeras Entradas',
-        data: data.map(entrada => entrada.cantidad),
-        fill: false,
-        borderColor: 'rgb(75, 192, 192)',
-        tension: 0.1
-      }]
-    },
-    options: {
-      scales: {
-        y: {
-          beginAtZero: true
+const renderStackedChart = () => {
+  const ctx = document.getElementById('stackedChart') as HTMLCanvasElement | null;
+  if (ctx) {
+    stackedChart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
+        datasets: [{
+          label: 'Ventas',
+          data: [10, 30, 39, 20, 25, 34, -10],
+          backgroundColor: 'rgba(255, 99, 132, 0.5)',
+          borderColor: 'rgb(255, 99, 132)',
+          borderWidth: 1
+        }, {
+          label: 'Entradas',
+          data: [18, 33, 22, 19, 11, 39, 30],
+          backgroundColor: 'rgba(54, 162, 235, 0.5)',
+          borderColor: 'rgb(54, 162, 235)',
+          borderWidth: 1
+        }]
+      },
+      options: {
+        scales: {
+          y: {
+            beginAtZero: true
+          }
         }
       }
-    }
-  });
+    });
+  }
 };
 
-const createSalidasChart = (data) => {
-  const ctx = document.getElementById('salidasChart').getContext('2d');
-  new Chart(ctx, {
-    type: 'bar',
-    data: {
-      labels: data.map(salida => salida.fecha),
-      datasets: [{
-        label: 'Primeras Salidas',
-        data: data.map(salida => salida.cantidad),
-        backgroundColor: 'rgb(255, 99, 132)'
-      }]
-    },
-    options: {
-      scales: {
-        y: {
-          beginAtZero: true
-        }
+const renderDoughnutChart = () => {
+  const ctx = document.getElementById('doughnutChart') as HTMLCanvasElement | null;
+  if (ctx) {
+    doughnutChart = new Chart(ctx, {
+      type: 'doughnut',
+      data: {
+        labels: ['Coca-cola', 'Blusa', 'Adidas', 'telefonos', 'Cafetera', 'Cereal de arroz'],
+        datasets: [{
+          label: 'My First Dataset',
+          data: [300, 50, 100, 40, 120, 200],
+          backgroundColor: [
+            'rgba(255, 99, 132, 0.5)',
+            'rgba(54, 162, 235, 0.5)',
+            'rgba(255, 205, 86, 0.5)',
+            'rgba(75, 192, 192, 0.5)',
+            'rgba(153, 102, 255, 0.5)',
+            'rgba(255, 159, 64, 0.5)'
+          ],
+          hoverOffset: 4
+        }]
       }
-    }
-  });
+    });
+  }
 };
 
 onMounted(async () => {
-  const data = await getData();
-  if (data) {
-    datos.value.ventasUltimos7Dias = data.ventasUltimos7Dias;
-    datos.value.primerasEntradas = data.primerasEntradas;
-    datos.value.primerasSalidas = data.primerasSalidas;
-    nextTick(() => {
-      createVentasChart(datos.value.ventasUltimos7Dias);
-      createEntradasChart(datos.value.primerasEntradas);
-      createSalidasChart(datos.value.primerasSalidas);
-    });
-  }
+  pedidos.value = await getData('pedidos');
+  productos.value = await getData('productos');
+  
+  renderPolarAreaChart();
+  renderStackedChart();
+  renderDoughnutChart();
 });
 </script>
 
+
 <style>
-.app-container {
-  display: flex;
-  min-height: 100vh;
+.dashboard {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 10%;
 }
 
-.app-sidebar {
-  width: 280px;
-  /* Estilos adicionales para tu sidebar */
+.data-section {
+  margin-bottom: 20px;
 }
 
-.dashboard-container {
-  flex: 1;
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  margin-left: -400px;
-}
-
-.dashboard-header h1 {
-  color: #3A5BFF;
+.data-section h2 {
+  margin-bottom: 10px;
 }
 
 .data-cards {
-  display: flex;
-  justify-content: space-between;
+  overflow-x: auto;
+  white-space: nowrap;
+}
+
+.card-container {
+  display: inline-block;
 }
 
 .card {
-  flex: 1;
   background-color: #FFFFFF;
   border-radius: 12px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   padding: 20px;
   margin-right: 20px;
-}
-
-.card:last-child {
-  margin-right: 0;
+  margin-bottom: 20px;
+  display: inline-block;
+  vertical-align: top;
 }
 
 .card h2 {
   color: #45464e;
   margin-bottom: 20px;
-}
-
-.data-item {
-  padding: 10px 0;
 }
 
 .data-item p {
@@ -198,27 +207,23 @@ onMounted(async () => {
   line-height: 1.5;
 }
 
-.graficas-container {
-  display: flex;
-  flex-wrap: wrap;
-  margin-top: 20px;
+ul {
+  list-style-type: none;
+  padding: 0;
 }
 
-.grafica-ventas,
-.grafica-entradas,
-.grafica-salidas {
-  flex: 1;
-  background-color: #FFFFFF;
-  border-radius: 12px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  padding: 20px;
-  margin-right: 20px;
+.charts-section {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+.chart {
+  width: 30%;
   margin-bottom: 20px;
 }
 
-.grafica-ventas:last-child,
-.grafica-entradas:last-child,
-.grafica-salidas:last-child {
-  margin-right: 0;
+canvas {
+  width: 100%;
 }
 </style>
