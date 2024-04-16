@@ -10,11 +10,7 @@
       <select v-model="filters.estado">
         <option disabled value="">Seleccione un estado</option>
         <option v-for="estado in uniqueEstados" :key="estado">{{ estado }}</option>
-      </select>
-      <input type="date" v-model="filters.fecha" list="fecha-list">
-      <datalist id="fecha-list">
-        <option v-for="product in products" :value="product.fecha" :key="product._id"/>
-      </datalist>
+      </select> 
       <button @click="exportToPDF" class="button-blue">Exportar a PDF</button>
       <button @click="clearFilters" class="button-blue">Limpiar Filtros</button>
     </div>
@@ -70,8 +66,8 @@
           <input id="editPrecio" type="number" v-model="editProductData.stock">
           <label for="editProveedor">Precio</label>
           <input id="editProveedor" type="number" v-model="editProductData.precio">
-          <label for="editEstado">Estado</label>
-          <input id="editEstado" type="text" v-model="editProductData.status">
+          <label for="editstatus">Estado</label>
+          <input id="editstatus" type="text" v-model="editProductData.status">
           <button type="submit" class="button-blue">Guardar Cambios</button>
         </form>
       </div>
@@ -85,14 +81,14 @@
         <form @submit.prevent="addNewProduct" class="form-container">
           <label for="addNombre">Nombre</label>
           <input id="addNombre" type="text" v-model="newProductData.nombre">
-          <label for="addCantidad">Categoria</label>
-          <input id="addCantidad" type="text" v-model="newProductData.cantidad">
-          <label for="addProveedor">Stock</label>
-          <input id="addProveedor" type="number" v-model="newProductData.stock">
+          <label for="addCategoria">Categoria</label>
+          <input id="addCategoria" type="text" v-model="newProductData.categoria">
+          <label for="addStock">Stock</label>
+          <input id="addStock" type="number" v-model="newProductData.stock">
           <label for="addPrecio">Precio</label>
           <input id="addPrecio" type="number" v-model="newProductData.precio">
-          <label for="addEstado">Status</label>
-          <input id="addEstado" type="text" v-model="newProductData.status">
+          <label for="addstatus">Status</label>
+          <input id="addstatus" type="text" v-model="newProductData.status">
           <button type="submit" class="button-green">Agregar Producto</button>
         </form>
       </div>
@@ -142,18 +138,19 @@ const clearFilters = () => {
 const uniqueEstados = computed(() => [...new Set(products.value.map(p => p.estado))]);
 
 const filteredProducts = computed(() => {
-  return products.value.filter(p => (!filters.value.producto || p.producto.toLowerCase().includes(filters.value.nombre.toLowerCase())) &&
-                                     (!filters.value.status || p.estado === filters.value.status) &&
-                                     (!filters.value.categoria || new Date(p.categoria).toISOString().slice(0, 10) === filters.value.categoria));
+  return products.value.filter(p => 
+  (!filters.value.producto || p.producto.toLowerCase().includes(filters.value.nombre.toLowerCase())) &&
+  (!filters.value.status || p.estado === filters.value.status) &&
+  (!filters.value.categoria || new Date(p.categoria).toISOString().slice(0, 10) === filters.value.categoria));
 });
 
 const statusClass = (status) => {
   switch (status) {
-    case 'Cancelado': return 'status-red';
-    case 'En proceso': return 'status-blue';
-    case 'Entregado': return 'status-green';
-    case 'Pendiente': return 'status-yellow';
-    case 'En tránsito': return 'status-purple';
+    case 'disponible': return 'status-green';
+    case 'poco stock': return 'status-yellow';
+    case 'agotado': return 'status-red';
+    case 'solicitado': return 'status-blue';
+    case 'retirado': return 'status-purple';
     default: return '';
   }
 };
@@ -206,7 +203,7 @@ const exportToPDF = () => {
   const doc = new jsPDF();
   doc.text('Productos', 10, 10);
   doc.autoTable({
-    head: [['ID', 'Nombre', 'Cantidad', 'Precio', 'Proveedor', 'Método de pago', 'Estado', 'Fecha']],
+    head: [['ID', 'Nombre', 'Categoria','Stock', 'Precio', 'Estado']],
     body: filteredProducts.value.map(p => [p._id, p.producto, p.cantidad.toString(), `$${p.precio.toFixed(2)}`, p.proveedor, p.metodo_pago, p.estado, new Date(p.fecha).toLocaleDateString()]),
     startY: 20,
   });
@@ -329,11 +326,12 @@ th:hover {
   text-decoration: none;
 }
 
-.status-red { color: #ff0000; } /* Cancelado */
-.status-blue { color: #007bff; } /* En proceso */
-.status-green { color: #28a745; } /* Entregado */
-.status-yellow { color: #ffff00; } /* Pendiente */
-.status-purple { color: #800080; } /* En tránsito */
+.status-red { color: #ff0000; } /* Disponible */
+.status-blue { color: #007bff; } /* Poco stock */
+.status-green { color: #28a745; } /* Agotado */
+.status-yellow { color: #ffff00; } /* Solicitado */
+.status-purple { color: #800080; } /* Retirado */
+
 
 .notification {
   position: fixed;
