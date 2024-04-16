@@ -1,4 +1,5 @@
 import type IUser from '@/interfaces/IUser'; // Asegúrate de importar la interfaz IUser desde el archivo correcto
+import router from '@/router';
 
 const api_url = 'http://187.157.236.135:5000';
 
@@ -47,9 +48,13 @@ export default {
       console.error('Error al validar token:', (error as Error).message);
       return false;
     }
+  },
+
+// metodo para cerrar sesion y deshacer el token de acceso
+  async logout(): Promise<void> {
+    localStorage.removeItem('accessToken');
+    router.push('/login');
   }
-
-
 
   
 
