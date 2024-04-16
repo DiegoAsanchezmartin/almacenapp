@@ -5,7 +5,7 @@
     <div class="filters">
       <input type="text" v-model="filters.nombre" placeholder="Filtrar por nombre" list="nombre-list">
       <datalist id="nombre-list">
-        <option v-for="product in products" :value="product.producto" :key="product._id"/>
+        <option v-for="product in products" :value="product.nombre" :key="product._id"/>
       </datalist>
       <select v-model="filters.estado">
         <option disabled value="">Seleccione un estado</option>
@@ -60,14 +60,14 @@
         <form @submit.prevent="saveProductChanges" class="form-container">
           <label for="editNombre">Nombre</label>
           <input id="editNombre" type="text" v-model="editProductData.nombre">
-          <label for="editCantidad">Categoria</label>
-          <input id="editCantidad" type="text" v-model="editProductData.categoria">
-          <label for="editPrecio">Stock</label>
-          <input id="editPrecio" type="number" v-model="editProductData.stock">
-          <label for="editProveedor">Precio</label>
-          <input id="editProveedor" type="number" v-model="editProductData.precio">
-          <label for="editstatus">Estado</label>
-          <input id="editstatus" type="text" v-model="editProductData.status">
+          <label for="editCategoria">Categoria</label>
+          <input id="editCategoria" type="text" v-model="editProductData.categoria">
+          <label for="editStock">Stock</label>
+          <input id="editStock" type="number" v-model="editProductData.stock">
+          <label for="editPrecio">Precio</label>
+          <input id="editPrecio" type="number" v-model="editProductData.precio">
+          <label for="editStatus">Estado</label>
+          <input id="editStatus" type="text" v-model="editProductData.status">
           <button type="submit" class="button-blue">Guardar Cambios</button>
         </form>
       </div>
@@ -87,14 +87,15 @@
           <input id="addStock" type="number" v-model="newProductData.stock">
           <label for="addPrecio">Precio</label>
           <input id="addPrecio" type="number" v-model="newProductData.precio">
-          <label for="addstatus">Status</label>
-          <input id="addstatus" type="text" v-model="newProductData.status">
+          <label for="addStatus">Status</label>
+          <input id="addStatus" type="text" v-model="newProductData.status">
           <button type="submit" class="button-green">Agregar Producto</button>
         </form>
       </div>
     </div>
-        <!-- Notificaciones -->
-        <div v-if="notification.show" :class="['notification', notification.type]">
+    
+    <!-- Notificaciones -->
+    <div v-if="notification.show" :class="['notification', notification.type]">
       <i :class="notificationIcon"></i> {{ notification.message }}
     </div>
   </div>
@@ -107,11 +108,11 @@ import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 
 const products = ref([]);
-const filters = ref({ nombre: '', status: '', categoria: '' });
+const filters = ref({ nombre: '', estado: '', categoria: '' });
 const showEditModal = ref(false);
 const editProductData = ref({});
 const showAddModal = ref(false);
-const newProductData = ref({ nombre: '', categoria: '', stock:0, precio: 0, status: '', });
+const newProductData = ref({ nombre: '', categoria: '', stock: 0, precio: 0, status: '' });
 const notification = ref({ show: false, message: '', type: '' });
 
 const notificationIcon = computed(() => {
@@ -132,16 +133,16 @@ const fetchProducts = async () => {
 };
 
 const clearFilters = () => {
-  filters.value = { nombre: '', estado: '', fecha: '' };
+  filters.value = { nombre: '', estado: '', categoria: '' };
 };
 
-const uniqueEstados = computed(() => [...new Set(products.value.map(p => p.estado))]);
+const uniqueEstados = computed(() => [...new Set(products.value.map(p => p.status))]);
 
 const filteredProducts = computed(() => {
   return products.value.filter(p => 
-  (!filters.value.producto || p.producto.toLowerCase().includes(filters.value.nombre.toLowerCase())) &&
-  (!filters.value.status || p.estado === filters.value.status) &&
-  (!filters.value.categoria || new Date(p.categoria).toISOString().slice(0, 10) === filters.value.categoria));
+  (!filters.value.nombre || p.nombre.toLowerCase().includes(filters.value.nombre.toLowerCase())) &&
+  (!filters.value.estado || p.status === filters.value.estado) &&
+  (!filters.value.categoria || p.categoria === filters.value.categoria));
 });
 
 const statusClass = (status) => {
@@ -198,17 +199,48 @@ const saveProductChanges = async () => {
     notify('error', 'Error al guardar cambios');
   }
 };
+const exportToPDF = (filtered = false) => {
+  try {
+    const doc = new jsPDF();
+    doc.text('Lista de Productos', 10, 10);
+    let tableData = [];
 
-const exportToPDF = () => {
-  const doc = new jsPDF();
-  doc.text('Productos', 10, 10);
-  doc.autoTable({
-    head: [['ID', 'Nombre', 'Categoria','Stock', 'Precio', 'Estado']],
-    body: filteredProducts.value.map(p => [p._id, p.producto, p.cantidad.toString(), `$${p.precio.toFixed(2)}`, p.proveedor, p.metodo_pago, p.estado, new Date(p.fecha).toLocaleDateString()]),
-    startY: 20,
-  });
-  doc.save('productos.pdf');
+    if (filtered) {
+      tableData = filteredProducts.value.map(p => {
+        return [
+          p._id,
+          p.nombre,
+          p.categoria,
+          p.stock,
+          p.precio != null ? `$${p.precio.toFixed(2)}` : '', // Verificación de null
+          p.status
+        ];
+      });
+    } else {
+      tableData = products.value.map(p => {
+        return [
+          p._id,
+          p.nombre,
+          p.categoria,
+          p.stock,
+          p.precio != null ? `$${p.precio.toFixed(2)}` : '', // Verificación de null
+          p.status
+        ];
+      });
+    }
+
+    doc.autoTable({
+      head: [['ID', 'Nombre', 'Categoría', 'Stock', 'Precio', 'Estado']],
+      body: tableData,
+      startY: 20,
+    });
+    doc.save('productos.pdf');
+  } catch (error) {
+    console.error('Error al exportar a PDF:', error.message);
+    notify('error', 'Error al exportar a PDF');
+  }
 };
+
 
 onMounted(fetchProducts);
 </script>
@@ -367,3 +399,4 @@ th:hover {
   }
 }
 </style>
+
