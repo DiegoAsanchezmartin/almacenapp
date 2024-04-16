@@ -1,289 +1,201 @@
 <template>
-  <div class="principal" >
-    <!-- Sección de búsqueda -->
-    <div class="search-section">
-      <input type="text" v-model="searchQuery" placeholder="Buscar productos..." class="search-input">
-      <button @click="exportToPDF" class="export-button">Exportar a PDF</button>
+  <div class="product-container">
+    <h2>Lista de Productos</h2>
+
+    <!-- Filtros -->
+    <div class="filters">
+      <input type="text" v-model="filters.nombre" placeholder="Filtrar por nombre" list="nombre-list">
+      <datalist id="nombre-list">
+        <option v-for="product in products" :value="product.producto" :key="product._id" />
+      </datalist>
+
+      <select v-model="filters.categoria">
+        <option disabled value="">Seleccione una categoría</option>
+        <option v-for="categoria in uniqueCategorias" :key="categoria">{{ categoria }}</option>
+      </select>
+
+      <select v-model="filters.status">
+        <option disabled value="">Seleccione un estado</option>
+        <option v-for="status in uniqueStatus" :key="status">{{ status }}</option>
+      </select>
+
+      <button @click="applyFilters" class="button-blue">Aplicar Filtros</button>
+      <button @click="exportToPDF" class="button-blue">Exportar a PDF</button>
     </div>
 
-    <!-- Sección de filtros -->
-    <div class="filter-section">
-      <div>
-        <button @click="filterByAllOrders" class="filter-button">Todas las órdenes</button>
-        <button @click="filterByInProgress" class="filter-button">En proceso</button>
-        <button @click="filterByDelivered" class="filter-button">Entregados</button>
-        <button @click="filterByCancelled" class="filter-button">Canceladas</button>
-      </div>
-      <div>
-        <button @click="filterByDate" class="filter-button">Fecha</button>
-        <button @click="filterByCategory" class="filter-button">Filtrar</button>
-      </div>
-    </div>
+    <!-- Botón para agregar productos -->
+    <button @click="openAddModal" class="button-green">Agregar Nuevo Producto</button>
 
     <!-- Tabla de productos -->
-    <table class="product-table">
+    <table v-if="filteredProducts.length > 0">
       <thead>
         <tr>
-          <th>Id</th>
+          <th>ID</th>
+          <th>Nombre</th>
           <th>Categoría</th>
-          <th>Producto</th>
           <th>Stock</th>
           <th>Precio</th>
-          <th>Estatus</th>
+          <th>Estado</th>
+          <th>Acciones</th>
         </tr>
       </thead>
       <tbody>
-        <tr v-for="(product, index) in paginatedData" :key="index">
-          <td>{{ (currentPage - 1) * itemsPerPage + index + 1 }}</td>
-          <td>{{ product.categoria }}</td>
+        <tr v-for="product in filteredProducts" :key="product._id">
+          <td>{{ product._id }}</td>
           <td>{{ product.producto }}</td>
+          <td>{{ product.categoria }}</td>
           <td>{{ product.stock }}</td>
           <td>{{ product.precio }}</td>
           <td>{{ product.status }}</td>
+          <td>
+            <button @click="openEditModal(product)" class="button-blue">Editar</button>
+            <button @click="deleteProduct(product._id)" class="button-blue">Eliminar</button>
+          </td>
         </tr>
       </tbody>
     </table>
+    <div v-else>
+      <p>No hay productos disponibles. Haz clic en 'Agregar Nuevo Producto' para añadir uno.</p>
+    </div>
 
-    <!-- Controles de paginación -->
-    <div class="pagination">
-      <button @click="prevPage" :disabled="currentPage === 1">Anterior</button>
-      <div class="page-buttons">
-        <button v-for="pageNumber in totalPages" :key="pageNumber" @click="changePage(pageNumber)" :class="{ 'active': pageNumber === currentPage }">
-          {{ pageNumber }}
-        </button>
+    <!-- Modal de Edición -->
+    <div v-if="showEditModal" class="modal">
+      <div class="modal-content">
+        <span class="close" @click="closeEditModal">&times;</span>
+        <h2>Editar Producto</h2>
+        <input type="text" v-model="editProductData.producto" placeholder="Nombre">
+        <input type="text" v-model="editProductData.categoria" placeholder="Categoría">
+        <input type="number" v-model="editProductData.stock" placeholder="Stock">
+        <input type="number" v-model="editProductData.precio" placeholder="Precio">
+        <input type="text" v-model="editProductData.status" placeholder="Estado">
+        <button @click="saveProductChanges" class="button-blue">Guardar Cambios</button>
       </div>
-      <button @click="nextPage" :disabled="currentPage === totalPages">Siguiente</button>
+    </div>
+
+    <!-- Modal de Agregar Nuevo Producto -->
+    <div v-if="showAddModal" class="modal">
+      <div class="modal-content">
+        <span class="close" @click="closeAddModal">&times;</span>
+        <h2>Agregar Nuevo Producto</h2>
+        <input type="text" v-model="newProductData.producto" placeholder="Nombre">
+        <input type="text" v-model="newProductData.categoria" placeholder="Categoría">
+        <input type="number" v-model="newProductData.stock" placeholder="Stock">
+        <input type="number" v-model="newProductData.precio" placeholder="Precio">
+        <input type="text" v-model="newProductData.status" placeholder="Estado">
+        <button @click="addNewProduct" class="button-green">Agregar Producto</button>
+      </div>
     </div>
   </div>
 </template>
 
-<script lang="ts" setup>
-import { ref, onMounted, computed, watch } from 'vue';
-import { getDataFromJson } from '@/service/DataProductos'; // Ajusta la ruta según la ubicación de tu archivo
-import { type Product } from '@/interfaces/Productos'; // Ajusta la ruta según la ubicación de tu archivo
+<script setup>
+import { ref, computed, onMounted } from 'vue';
+import { obtenerProductos, eliminarProducto, actualizarProducto, crearProducto } from '@/service/DataProductos';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 
+const products = ref([]);
+const filters = ref({ producto: '', categoria: '', status: '' });
+const showEditModal = ref(false);
+const editProductData = ref({});
+const showAddModal = ref(false);
+const newProductData = ref({ producto: '', categoria: '', stock: 0, precio: 0, status: '' });
 
-// Datos del JSON
-const jsonData = ref<Product[]>([]);
-const searchQuery = ref<string>('');
-const itemsPerPage = 8;
-const currentPage = ref(1);
-
-// Cargar datos del JSON al montar el componente
-onMounted(async () => {
-  jsonData.value = await getDataFromJson();
-});
-
-
-// Método para realizar la búsqueda
-const searchProducts = () => {
-  return jsonData.value.filter((product) => {
-    return (
-      product.producto.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-      product.categoria.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-      product.status.toLowerCase().includes(searchQuery.value.toLowerCase())
-    );
-  });
+const fetchProducts = async () => {
+  try {
+    products.value = await obtenerProductos();
+    console.log("Productos cargados exitosamente");
+  } catch (error) {
+    console.error("Error al cargar productos:", error.message);
+    alert("Error al cargar productos");
+  }
 };
 
-// Declara la propiedad 'autoTable' en el tipo 'jsPDF'
-declare module 'jspdf' {
-  interface jsPDF {
-    autoTable: (options: any) => jsPDF;
+const applyFilters = () => {
+  let filtered = products.value;
+  if (filters.value.producto) {
+    filtered = filtered.filter(product => product.producto.toLowerCase().includes(filters.value.producto.toLowerCase()));
   }
-}
+  if (filters.value.categoria) {
+    filtered = filtered.filter(product => product.categoria === filters.value.categoria);
+  }
+  if (filters.value.status) {
+    filtered = filtered.filter(product => product.status === filters.value.status);
+  }
+  return filtered;
+};
 
-// Función para exportar a PDF
+const filteredProducts = computed(() => {
+  return applyFilters();
+});
+
+const uniqueCategorias = computed(() => {
+  return [...new Set(products.value.map(product => product.categoria))];
+});
+
+const uniqueStatus = computed(() => {
+  return [...new Set(products.value.map(product => product.status))];
+});
+
+const openEditModal = (product) => {
+  editProductData.value = {...product};
+  showEditModal.value = true;
+};
+
+const closeEditModal = () => {
+  showEditModal.value = false;
+};
+
+const openAddModal = () => {
+  showAddModal.value = true;
+};
+
+const closeAddModal = () => {
+  showAddModal.value = false;
+};
+
+const addNewProduct = async () => {
+  try {
+    const addedProduct = await crearProducto(newProductData.value);
+    products.value.push(addedProduct);
+    closeAddModal();
+    alert("Producto agregado exitosamente");
+  } catch (error) {
+    console.error('Error al agregar producto:', error.message);
+    alert("Error al agregar producto");
+  }
+};
+
+const saveProductChanges = async () => {
+  try {
+    const updatedProduct = await actualizarProducto(editProductData.value._id, editProductData.value);
+    const index = products.value.findIndex(p => p._id === editProductData.value._id);
+    if (index !== -1) {
+      products.value[index] = updatedProduct;
+    }
+    showEditModal.value = false;
+    console.log('Producto actualizado exitosamente');
+    alert('Producto actualizado exitosamente');
+  } catch (error) {
+    console.error('Error al guardar cambios:', error.message);
+    alert("Error al guardar cambios");
+  }
+};
+
 const exportToPDF = () => {
   const doc = new jsPDF();
-  
-  doc.text('Reporte de productos', 10, 10);
-  // Suponiendo que tienes una variable `filteredData` con los datos filtrados
-  doc.autoTable({ html: '.product-table' });
-  
-  doc.save('reporte_productos.pdf');
-};
-
-
-const filterByAllOrders = () => {
-  // Lógica para filtrar todas las órdenes
-};
-
-const filterByInProgress = () => {
-  // Lógica para filtrar órdenes en proceso
-};
-
-const filterByDelivered = () => {
-  // Lógica para filtrar órdenes entregadas
-};
-
-const filterByCancelled = () => {
-  // Lógica para filtrar órdenes canceladas
-};
-
-const filterByDate = () => {
-  // Lógica para filtrar por fecha
-};
-
-const filterByCategory = () => {
-  // Lógica para filtrar por categoría
-};
-
-// Datos filtrados según la búsqueda
-const filteredData = computed(() => {
-  return jsonData.value.filter((product) => {
-    return (
-      product.producto.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-      product.categoria.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-      product.status.toLowerCase().includes(searchQuery.value.toLowerCase())
-    );
+  doc.text('Productos', 10, 10);
+  doc.autoTable({
+    head: [['ID', 'Nombre', 'Categoría', 'Stock', 'Precio', 'Estado']],
+    body: filteredProducts.value.map(p => [p._id, p.producto, p.categoria, p.stock, p.precio, p.status]),
+    startY: 20,
   });
-});
-
-// Paginación de datos
-const paginatedData = computed(() => {
-  const startIndex = (currentPage.value - 1) * itemsPerPage;
-  const endIndex = startIndex + itemsPerPage;
-  return filteredData.value.slice(startIndex, endIndex);
-});
-
-// Total de páginas
-const totalPages = computed(() => {
-  return Math.ceil(filteredData.value.length / itemsPerPage);
-});
-
-// Funciones para cambiar de página
-const changePage = (pageNumber: number) => {
-  currentPage.value = pageNumber;
+  doc.save('productos.pdf');
 };
 
-const nextPage = () => {
-  if (currentPage.value < totalPages.value) {
-    currentPage.value++;
-  }
-};
-
-const prevPage = () => {
-  if (currentPage.value > 1) {
-    currentPage.value--;
-  }
-};
+onMounted(fetchProducts);
 </script>
 
-<style scoped>
-/* Estilos para la sección de búsqueda */
-
-.principal{
-  margin-left: -380px;
-  padding: 30px;
-  margin-right: 100px;
-}
-.search-section {
-  margin-bottom: 20px;
-  display: flex;
-  align-items: center;
-}
-
-.search-input {
-  flex: 1;
-  padding: 8px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-}
-
-.export-button {
-  margin-left: 10px;
-  padding: 8px 16px;
-  background-color: #007bff;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-.export-button:hover {
-  background-color: #0056b3;
-}
-
-/* Estilos para la sección de filtros */
-.filter-section {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 20px;
-}
-
-.filter-button {
-  padding: 8px 16px;
-  background-color: #17a2b8;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  margin-right: 8px;
-}
-
-.filter-button:not(:last-child) {
-  margin-right: 10px;
-}
-
-.filter-button:hover {
-  background-color: #138496;
-}
-
-/* Estilos para la tabla de productos */
-.product-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-.product-table th, .product-table td {
-  padding: 8px;
-  border-bottom: 1px solid #ccc;
-}
-
-.product-table th {
-  text-align: left;
-  background-color: #f8f9fa;
-}
-
-.product-table tbody tr:nth-child(even) {
-  background-color: #f2f2f2;
-}
-
-.pagination {
-  margin-top: 20px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.pagination button {
-  padding: 8px 16px;
-  margin: 0 4px;
-  background-color: #007bff;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-.pagination button:hover {
-  background-color: #0056b3;
-}
-
-.pagination button:disabled {
-  background-color: #ccc;
-  cursor: not-allowed;
-}
-
-.page-buttons {
-  display: flex;
-  align-items: center;
-}
-
-.page-buttons button.active {
-  background-color: #17a2b8;
-}
+<style>
+/* Estilos CSS */
 </style>
