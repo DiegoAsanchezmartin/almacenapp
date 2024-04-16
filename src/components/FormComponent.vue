@@ -74,7 +74,9 @@
     display: block;
     margin-bottom: 5px;
     font-weight: bold;
-    color: #343a40; /* Color de texto oscuro */
+    color: #0980f7; /* Color de texto oscuro */
+    font-size: 50px;
+
   }
   
   .form-control {
