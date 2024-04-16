@@ -3,7 +3,7 @@
   
   <div class="login-box">
     
-    <h1>Iniciar sesión</h1>
+    <h1>INICIAR SESION</h1>
     
 
     
@@ -18,7 +18,6 @@
       </div>
       <div class="button-group">
         <button type="submit" class="btn btn-primary">Iniciar sesión</button>
-        <button type="button" class="btn btn-danger" @click="cancel">Cancelar</button>
       </div>
     </form>
   </div>
@@ -55,7 +54,7 @@ const cancel = () => {
   margin: 0 auto;
   padding: 20px;
   border: 1px solid #ced4da;
-  border-radius: 50px;
+  border-radius: 20px;
   background-color: #fff;
 }
 
@@ -64,9 +63,9 @@ h1{
   text-align: center;
   padding: 20px;
   color: hwb(0 0% 100%);
-  font-family: "Jersey 10", sans-serif;
+  font-family: "Lato", sans-serif;
   font-weight:400;
-  font-size: 45px;
+  font-size: 25px;
 
 }
   
@@ -74,6 +73,13 @@ h1{
 .form-group {
   margin-bottom: 20px;
 
+}
+
+.button-group {
+  display: flex;
+  justify-content: center; /* Centra horizontalmente los elementos dentro del contenedor */
+  align-items: center;
+  margin-top: 20px; /* Espacio opcional entre el formulario y el botón */
 }
 
 .label {
@@ -89,11 +95,7 @@ h1{
   border-radius: 3px;
 }
 
-.button-group {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
+
 
 button {
   padding: 10px 20px;
@@ -105,6 +107,7 @@ button {
 .btn-primary {
   background-color: #007bff;
   color: #fff;
+  text-align: center;
 }
 
 .btn-danger {

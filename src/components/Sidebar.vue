@@ -10,7 +10,7 @@
         <li class="nav-item"><router-link to="/ordenes">Administración de Ordenes</router-link></li>
         <li class="nav-item"><router-link to="/reportes">Reportes</router-link></li>
         <!-- Boton para cerrar sesion -->
-        <li class="nav-item"><button @click="cerrarSesion">Cerrar sesión</button></li>
+        <li class="nav-item"><button class="logout" @click="cerrarSesion">Cerrar sesión</button></li>
 
       </ul>
     </nav>
@@ -76,12 +76,25 @@ const cerrarSesion = async () => {
 }
 
 .nav-item a {
-  color: #C2C0FF;
+  color: #ffffff;
   text-decoration: none;
   font-family: 'Poppins', sans-serif;
   font-weight: 500;
   font-size: 14px;
 }
+.nav-item .logout {
+    background-color: transparent;
+    font-family: 'Poppins', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    border: none;
+    color: inherit;
+    cursor: pointer;
+    padding: 0;
+}
+
+
+
 .main-content {
   flex: 1;
   overflow-x: hidden; /* Evita el desbordamiento horizontal */
