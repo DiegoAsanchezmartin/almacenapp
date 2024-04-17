@@ -7,10 +7,6 @@
       <datalist id="nombre-list">
         <option v-for="product in products" :value="product.nombre" :key="product._id"/>
       </datalist>
-      <select v-model="filters.categoria">
-        <option disabled value="">Seleccione una categoría</option>
-        <option v-for="categoria in uniqueCategorias" :key="categoria">{{ categoria }}</option>
-      </select>
       <select v-model="filters.estado">
         <option disabled value="">Seleccione un estado</option>
         <option v-for="estado in uniqueEstados" :key="estado">{{ estado }}</option>
@@ -18,6 +14,7 @@
       <button @click="exportToPDF" class="button-blue">Exportar a PDF</button>
       <button @click="clearFilters" class="button-blue">Limpiar Filtros</button>
     </div>
+
     
     <!-- Botón para agregar productos -->
     <button @click="openAddModal" class="button-green"><i class="fas fa-plus"></i> Agregar Nuevo Producto</button>
@@ -157,20 +154,12 @@ const clearFilters = () => {
 };
 
 const uniqueEstados = computed(() => [...new Set(products.value.map(p => p.status))]);
-const uniqueCategorias = computed(() => [...new Set(products.value.map(p => p.categoria))]);
 
 const filteredProducts = computed(() => {
-  let filtered = products.value;
-  if (filters.value.nombre) {
-    filtered = filtered.filter(p => p.nombre.toLowerCase().includes(filters.value.nombre.toLowerCase()));
-  }
-  if (filters.value.estado) {
-    filtered = filtered.filter(p => p.status === filters.value.estado);
-  }
-  if (filters.value.categoria) {
-    filtered = filtered.filter(p => p.categoria === filters.value.categoria);
-  }
-  return filtered;
+  return products.value.filter(p => 
+  (!filters.value.nombre || p.nombre.toLowerCase().includes(filters.value.nombre.toLowerCase())) &&
+  (!filters.value.estado || p.status === filters.value.estado) &&
+  (!filters.value.categoria || p.categoria === filters.value.categoria));
 });
 
 const statusClass = (status) => {
@@ -192,17 +181,6 @@ const closeAddModal = () => {
   showAddModal.value = false;
 };
 
-const deleteProduct = async (id) => {
-  try {
-    await eliminarProducto(id);
-    products.value = products.value.filter((product) => product._id !== id);
-    notify('success', 'Producto eliminado exitosamente');
-  } catch (error) {
-    console.error('Error al eliminar producto:', error.message);
-    notify('error', 'Error al eliminar producto');
-  }
-};
-
 const addNewProduct = async () => {
   try {
     const addedProduct = await crearProducto(newProductData.value);
@@ -215,20 +193,34 @@ const addNewProduct = async () => {
   }
 };
 
-const exportToPDF = () => {
+const saveProductChanges = async () => {
+  try {
+    const updatedProduct = await actualizarProducto(editProductData.value._id, editProductData.value);
+    const index = products.value.findIndex(p => p._id === editProductData.value._id);
+    if (index !== -1) {
+      products.value[index] = updatedProduct;
+    }
+    showEditModal.value = false;
+    notify('success', 'Producto actualizado exitosamente');
+  } catch (error) {
+    console.error('Error al guardar cambios:', error.message);
+    notify('error', 'Error al guardar cambios');
+  }
+};
+const exportToPDF = (filtered = false) => {
   try {
     const doc = new jsPDF();
     doc.text('Lista de Productos', 10, 10);
     let tableData = [];
 
-    if (filteredProducts.value.length > 0) {
+    if (filtered) {
       tableData = filteredProducts.value.map(p => {
         return [
           p._id,
           p.nombre,
           p.categoria,
           p.stock,
-          p.precio != null ? `$${p.precio.toFixed(2)}` : '', 
+          p.precio != null ? `$${p.precio.toFixed(2)}` : '', // Verificación de null
           p.status
         ];
       });
@@ -257,9 +249,9 @@ const exportToPDF = () => {
   }
 };
 
+
 onMounted(fetchProducts);
 </script>
-
 
 <style>
 .error-message {
