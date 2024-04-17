@@ -24,7 +24,7 @@
       <div class="data-cards">
         <div class="card-container">
           <div class="card" v-for="(pedido, index) in pedidos" :key="'pedido-' + index">
-            <p><strong>Producto:</strong> {{ pedido.producto }}</p>
+            <p><strong>Producto:</strong> {{ pedido.nombre }}</p>
             <p><strong>Cantidad:</strong> {{ pedido.cantidad }}</p>
             <p><strong>Precio:</strong> {{ pedido.precio }}</p>
             <p><strong>Proveedor:</strong> {{ pedido.proveedor }}</p>
@@ -42,7 +42,7 @@
       <div class="data-cards">
         <div class="card-container">
           <div class="card" v-for="(producto, index) in productos" :key="'producto-' + index">
-            <p><strong>Nombre:</strong> {{ producto.producto }}</p>
+            <p><strong>Nombre:</strong> {{ producto.nombre }}</p>
             <p><strong>Precio:</strong> {{ producto.precio }}</p>
             <p><strong>Categoría:</strong> {{ producto.categoria }}</p>
             <p><strong>Stock:</strong> {{ producto.stock }}</p>
@@ -59,7 +59,7 @@ import { ref, onMounted } from 'vue';
 import { getData } from '@/service/DataService';
 import { Chart, registerables } from 'chart.js';
 
-Chart.register(...registerables);
+Chart.register(...registerables); // Registra todas las funcionalidades necesarias de Chart.js
 
 const pedidos = ref([]);
 const productos = ref([]);
@@ -133,7 +133,7 @@ const renderDoughnutChart = () => {
       data: {
         labels: ['Coca-cola', 'Blusa', 'Adidas', 'telefonos', 'Cafetera', 'Cereal de arroz'],
         datasets: [{
-          label: 'Mi stock',
+          label: 'My First Dataset',
           data: [300, 50, 100, 40, 120, 200],
           backgroundColor: [
             'rgba(255, 99, 132, 0.5)',
@@ -152,9 +152,7 @@ const renderDoughnutChart = () => {
 
 onMounted(async () => {
   pedidos.value = await getData('pedidos');
-  console.log(pedidos.value);
   productos.value = await getData('productos');
-  console.log(productos.value);
   
   renderPolarAreaChart();
   renderStackedChart();

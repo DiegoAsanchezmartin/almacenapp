@@ -1,6 +1,6 @@
 <template>
   <div class="product-container">
-    <h2>Lista de Pedidos</h2>
+    <h2>Lista de Productos</h2>
     <!-- Barra de Filtros -->
     <div class="filters">
       <input type="text" v-model="filters.nombre" placeholder="Filtrar por nombre" list="nombre-list">
@@ -20,7 +20,7 @@
     </div>
 
     <!-- Botón para agregar productos -->
-    <button @click="openAddModal" class="button-green"><i class="fas fa-plus"></i> Agregar Nuevo Pedido</button>
+    <button @click="openAddModal" class="button-green"><i class="fas fa-plus"></i> Agregar Nuevo Producto</button>
 
     <!-- Tabla de productos -->
     <table v-if="products.length > 0">
@@ -49,13 +49,15 @@
           <td>{{ product.fecha }}</td>
           <td>
             <button @click="openEditModal(product)" class="icon-button"><i class="fas fa-edit"></i></button>
+            <button @click="deleteProduct(product._id)" class="icon-button"><i class="fas fa-trash-alt"></i></button>
           </td>
         </tr>
       </tbody>
     </table>
     <div v-else>
-      <p>No hay productos disponibles. Haz clic en 'Agregar Nuevo Pedido' para añadir uno.</p>
+      <p>No hay productos disponibles. Haz clic en 'Agregar Nuevo Producto' para añadir uno.</p>
     </div>
+
 
     <!-- Modal de Edición -->
     <div v-if="showEditModal" class="modal">
@@ -63,54 +65,20 @@
         <span class="close" @click="closeEditModal">&times;</span>
         <h2>Editar Producto</h2>
         <form @submit.prevent="saveProductChanges" class="form-container">
-          <div class="form-group">
-            <label for="editNombre">Nombre</label>
-            <input id="editNombre" type="text" v-model="editProductData.producto">
-            <!-- Validación de nombre -->
-            <span v-if="editProductData.producto === ''" class="error-message">El nombre es requerido.</span>
-            <span v-else-if="editProductData.producto.length < 5" class="error-message">El nombre debe tener al menos 5 caracteres.</span>
-          </div>
-          <div class="form-group">
-            <label for="editCantidad">Cantidad</label>
-            <input id="editCantidad" type="number" v-model="editProductData.cantidad">
-            <!-- Validación de cantidad -->
-            <!-- Aquí puedes agregar la validación que consideres necesaria -->
-          </div>
-          <div class="form-group">
-            <label for="editPrecio">Precio</label>
-            <input id="editPrecio" type="number" v-model="editProductData.precio">
-            <!-- Validación de precio -->
-            <!-- Aquí puedes agregar la validación que consideres necesaria -->
-          </div>
-          <div class="form-group">
-            <label for="editProveedor">Proveedor</label>
-            <input id="editProveedor" type="text" v-model="editProductData.proveedor">
-            <!-- Validación de proveedor -->
-            <!-- Aquí puedes agregar la validación que consideres necesaria -->
-          </div>
-          <div class="form-group">
-            <label for="editMetodo">Método de Pago</label>
-            <select id="editMetodo" v-model="editProductData.metodo_pago">
-              <option disabled value="">Seleccione un método de pago</option>
-              <option v-for="metodo in metodosPago" :key="metodo">{{ metodo }}</option>
-            </select>
-            <!-- Validación de método de pago -->
-            <span v-if="editProductData.metodo_pago === ''" class="error-message">Seleccione un método de pago.</span>
-          </div>
-          <div class="form-group">
-            <label for="editEstado">Estado</label>
-            <select id="editEstado" v-model="editProductData.estado">
-              <option disabled value="">Seleccione un estado</option>
-              <option v-for="estado in uniqueEstados" :key="estado">{{ estado }}</option>
-            </select>
-            <!-- Validación de estado -->
-            <span v-if="editProductData.estado === ''" class="error-message">Seleccione un estado.</span>
-          </div>
-          <div class="form-group">
-            <label for="editFecha">Fecha</label>
-            <input id="editFecha" type="date" v-model="editProductData.fecha">
-            <!-- Validación de fecha -->
-          </div>
+          <label for="editNombre">Nombre</label>
+          <input id="editNombre" type="text" v-model="editProductData.producto">
+          <label for="editCantidad">Cantidad</label>
+          <input id="editCantidad" type="number" v-model="editProductData.cantidad">
+          <label for="editPrecio">Precio</label>
+          <input id="editPrecio" type="number" v-model="editProductData.precio">
+          <label for="editProveedor">Proveedor</label>
+          <input id="editProveedor" type="text" v-model="editProductData.proveedor">
+          <label for="editMetodo">Método de Pago</label>
+          <input id="editMetodo" type="text" v-model="editProductData.metodo_pago">
+          <label for="editEstado">Estado</label>
+          <input id="editEstado" type="text" v-model="editProductData.estado">
+          <label for="editFecha">Fecha</label>
+          <input id="editFecha" type="date" v-model="editProductData.fecha">
           <button type="submit" class="button-blue">Guardar Cambios</button>
         </form>
       </div>
@@ -120,64 +88,28 @@
     <div v-if="showAddModal" class="modal">
       <div class="modal-content">
         <span class="close" @click="closeAddModal">&times;</span>
-        <h2>Agregar Nuevo Pedido</h2>
+        <h2>Agregar Nuevo Producto</h2>
         <form @submit.prevent="addNewProduct" class="form-container">
-          <div class="form-group" :class="{ 'has-error': newProductData.producto === '' }">
-            <label for="addNombre">Nombre</label>
-            <input id="addNombre" type="text" v-model="newProductData.producto" required minlength="5">
-            <!-- Validación de nombre -->
-            <span v-if="newProductData.producto === ''" class="error-message">El nombre es requerido.</span>
-          </div>
-          <div class="form-group" :class="{ 'has-error': newProductData.cantidad <= 0 }">
-            <label for="addCantidad">Cantidad</label>
-            <input id="addCantidad" type="number" v-model="newProductData.cantidad" required>
-            <!-- Validación de cantidad -->
-            <span v-if="newProductData.cantidad <= 0" class="error-message">La cantidad debe ser mayor que cero.</span>
-          </div>
-          <div class="form-group" :class="{ 'has-error': newProductData.precio <= 0 }">
-            <label for="addPrecio">Precio</label>
-            <input id="addPrecio" type="number" v-model="newProductData.precio" required>
-            <!-- Validación de precio -->
-            <span v-if="newProductData.precio <= 0" class="error-message">El precio debe ser mayor que cero.</span>
-          </div>
-          <div class="form-group">
-            <label for="addProveedor">Proveedor</label>
-            <input id="addProveedor" type="text" v-model="newProductData.proveedor">
-            <!-- No se requiere validación de proveedor -->
-          </div>
-          <div class="form-group" :class="{ 'has-error': newProductData.metodo_pago === '' }">
-            <label for="addMetodo">Método de Pago</label>
-            <select id="addMetodo" v-model="newProductData.metodo_pago" required>
-              <option value="" disabled selected>Seleccione un método de pago</option>
-              <!-- Opciones precargadas de método de pago -->
-              <option v-for="metodo in metodosPago" :key="metodo">{{ metodo }}</option>
-            </select>
-            <!-- Validación de método de pago -->
-            <span v-if="newProductData.metodo_pago === ''" class="error-message">Seleccione un método de pago.</span>
-          </div>
-          <div class="form-group" :class="{ 'has-error': newProductData.estado === '' }">
-            <label for="addEstado">Estado</label>
-            <select id="addEstado" v-model="newProductData.estado" required>
-              <option value="" disabled selected>Seleccione un estado</option>
-              <!-- Opciones precargadas de estados -->
-              <option v-for="estado in uniqueEstados" :key="estado">{{ estado }}</option>
-            </select>
-            <!-- Validación de estado -->
-            <span v-if="newProductData.estado === ''" class="error-message">Seleccione un estado.</span>
-          </div>
-          <div class="form-group" :class="{ 'has-error': newProductData.fecha === '' }">
-            <label for="addFecha">Fecha</label>
-            <input id="addFecha" type="date" v-model="newProductData.fecha" required>
-            <!-- Validación de fecha -->
-            <span v-if="newProductData.fecha === ''" class="error-message">Seleccione una fecha.</span>
-          </div>
+          <label for="addNombre">Nombre</label>
+          <input id="addNombre" type="text" v-model="newProductData.producto">
+          <label for="addCantidad">Cantidad</label>
+          <input id="addCantidad" type="number" v-model="newProductData.cantidad">
+          <label for="addPrecio">Precio</label>
+          <input id="addPrecio" type="number" v-model="newProductData.precio">
+          <label for="addProveedor">Proveedor</label>
+          <input id="addProveedor" type="text" v-model="newProductData.proveedor">
+          <label for="addMetodo">Método de Pago</label>
+          <input id="addMetodo" type="text" v-model="newProductData.metodo_pago">
+          <label for="addEstado">Estado</label>
+          <input id="addEstado" type="text" v-model="newProductData.estado">
+          <label for="addFecha">Fecha</label>
+          <input id="addFecha" type="date" v-model="newProductData.fecha">
           <button type="submit" class="button-green">Agregar Producto</button>
         </form>
       </div>
     </div>
-
-    <!-- Notificaciones -->
-    <div v-if="notification.show" :class="['notification', notification.type]">
+        <!-- Notificaciones -->
+        <div v-if="notification.show" :class="['notification', notification.type]">
       <i :class="notificationIcon"></i> {{ notification.message }}
     </div>
   </div>
@@ -219,8 +151,6 @@ const clearFilters = () => {
 };
 
 const uniqueEstados = computed(() => [...new Set(products.value.map(p => p.estado))]);
-
-const metodosPago = ref(['Efectivo','Transferencia bancaria']);
 
 const filteredProducts = computed(() => {
   return products.value.filter(p => (!filters.value.nombre || p.producto.toLowerCase().includes(filters.value.nombre.toLowerCase())) &&
@@ -448,38 +378,5 @@ th:hover {
     opacity: 1;
     transform: translateX(0);
   }
-}
-
-.form-container {
-  max-width: 400px;
-  margin: auto;
-}
-
-.form-group {
-  margin-bottom: 15px;
-}
-
-.form-group label {
-  display: block;
-  font-weight: bold;
-}
-
-.form-group input[type="text"],
-.form-group input[type="number"],
-.form-group select {
-  width: 100%;
-  padding: 8px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-}
-
-.error-message {
-  color: #ff0000;
-}
-
-.has-error input[type="text"],
-.has-error input[type="number"],
-.has-error select {
-  border-color: #ff0000;
 }
 </style>
