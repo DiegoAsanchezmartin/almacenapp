@@ -284,7 +284,7 @@ onMounted(fetchProducts);
 
 .product-container {
   width: 80%;
-  margin: auto;
+  margin-right: 100px;
   padding: 20px;
 }
 
