@@ -21,16 +21,23 @@ export const getData = async (endpoint: string | undefined) => {
 
     // Mapear los datos según el tipo de endpoint
     if (endpoint === 'pedidos') {
-      return data.map((entry: { fecha: any; nombre: any; estado: any; }) => ({
+      return data.map((entry: { fecha: any; producto: any; estado: any; cantidad:any; precio:any; proveedor:any; }) => ({
         fecha: entry.fecha,
-        nombre: entry.nombre,
-        estado: entry.estado
+        producto: entry.producto,
+        estado: entry.estado,
+        cantidad: entry.cantidad,
+        proveedor: entry.proveedor,
+        precio: entry.precio,
+
       }));
     } else if (endpoint === 'productos') {
-      return data.map((entry: { id: any; nombre: any; precio: any; }) => ({
+      return data.map((entry: { id: any; producto: any; categoria:any; stock:any; precio:any; status:any; }) => ({
         id: entry.id,
-        nombre: entry.nombre,
-        precio: entry.precio
+        nombre: entry.producto,
+        precio: entry.precio,
+        categoria: entry.categoria,
+        stock: entry.stock,
+        status: entry.status,
       }));
     }
   } catch (error) {
