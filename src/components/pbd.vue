@@ -282,6 +282,7 @@ th, td {
   border: 1px solid #ddd;
   padding: 12px;
   text-align: left;
+  width: 100px; 
 }
 
 th {
