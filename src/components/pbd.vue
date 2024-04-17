@@ -55,43 +55,27 @@
     </div>
 
 
-    <!-- Modal de Edición -->
-    <div v-if="showEditModal" class="modal">
-      <div class="modal-content">
-        <span class="close" @click="closeEditModal">&times;</span>
-        <h2>Editar Producto</h2>
-        <form @submit.prevent="saveProductChanges" class="form-container">
-          <label for="editNombre">Nombre</label>
-          <input id="editNombre" type="text" v-model="editProductData.nombre">
-          <label for="editCategoria">Categoria</label>
-          <input id="editCategoria" type="text" v-model="editProductData.categoria">
-          <label for="editStock">Stock</label>
-          <input id="editStock" type="number" v-model="editProductData.stock">
-          <label for="editPrecio">Precio</label>
-          <input id="editPrecio" type="number" v-model="editProductData.precio">
-          <label for="editStatus">Estado</label>
-          <input id="editStatus" type="text" v-model="editProductData.status">
-          <button type="submit" class="button-blue">Guardar Cambios</button>
-        </form>
-      </div>
-    </div>
-
     <!-- Modal de Agregar Nuevo Producto -->
     <div v-if="showAddModal" class="modal">
       <div class="modal-content">
         <span class="close" @click="closeAddModal">&times;</span>
         <h2>Agregar Nuevo Producto</h2>
-        <form @submit.prevent="addNewProduct" class="form-container">
+        <form @submit.prevent="validateAndAddProduct" class="form-container">
           <label for="addNombre">Nombre</label>
           <input id="addNombre" type="text" v-model="newProductData.nombre">
-          <label for="addCategoria">Categoria</label>
+          <p v-if="newProductErrors.nombre" class="error-message">{{ newProductErrors.nombre }}</p>
+          <label for="addCategoria">Categoría</label>
           <input id="addCategoria" type="text" v-model="newProductData.categoria">
+          <p v-if="newProductErrors.categoria" class="error-message">{{ newProductErrors.categoria }}</p>
           <label for="addStock">Stock</label>
           <input id="addStock" type="number" v-model="newProductData.stock">
+          <p v-if="newProductErrors.stock" class="error-message">{{ newProductErrors.stock }}</p>
           <label for="addPrecio">Precio</label>
           <input id="addPrecio" type="number" v-model="newProductData.precio">
-          <label for="addStatus">Status</label>
+          <p v-if="newProductErrors.precio" class="error-message">{{ newProductErrors.precio }}</p>
+          <label for="addStatus">Estado</label>
           <input id="addStatus" type="text" v-model="newProductData.status">
+          <p v-if="newProductErrors.status" class="error-message">{{ newProductErrors.status }}</p>
           <button type="submit" class="button-green">Agregar Producto</button>
         </form>
       </div>
@@ -112,11 +96,44 @@ import 'jspdf-autotable';
 
 const products = ref([]);
 const filters = ref({ nombre: '', estado: '', categoria: '' });
-const showEditModal = ref(false);
-const editProductData = ref({});
 const showAddModal = ref(false);
-const newProductData = ref({ nombre: '', categoria: '', stock: 0, precio: 0, status: '' });
+const newProductData = ref({ nombre: '', categoria: '', stock: null, precio: null, status: '' });
 const notification = ref({ show: false, message: '', type: '' });
+
+const newProductErrors = ref({ nombre: '', categoria: '', stock: '', precio: '', status: '' });
+
+const validateAndAddProduct = async () => {
+  // Reiniciamos los errores
+  newProductErrors.value = { nombre: '', categoria: '', stock: '', precio: '', status: '' };
+  
+  // Validamos los campos
+  let isValid = true;
+  if (!newProductData.value.nombre.trim()) {
+    newProductErrors.value.nombre = 'El nombre del producto es requerido';
+    isValid = false;
+  }
+  if (!newProductData.value.categoria.trim()) {
+    newProductErrors.value.categoria = 'La categoría del producto es requerida';
+    isValid = false;
+  }
+  if (isNaN(newProductData.value.stock) || newProductData.value.stock === null || newProductData.value.stock < 0) {
+    newProductErrors.value.stock = 'El stock debe ser un número positivo';
+    isValid = false;
+  }
+  if (isNaN(newProductData.value.precio) || newProductData.value.precio === null || newProductData.value.precio < 0) {
+    newProductErrors.value.precio = 'El precio debe ser un número positivo';
+    isValid = false;
+  }
+  if (!newProductData.value.status.trim()) {
+    newProductErrors.value.status = 'El estado del producto es requerido';
+    isValid = false;
+  }
+  
+  // Si no hay errores, agregamos el producto
+  if (isValid) {
+    addNewProduct();
+  }
+};
 
 const notificationIcon = computed(() => {
   return notification.value.type === 'success' ? 'fas fa-check-circle' : 'fas fa-times-circle';
@@ -167,15 +184,6 @@ const statusClass = (status) => {
   }
 };
 
-const openEditModal = (product) => {
-  editProductData.value = { ...product };
-  showEditModal.value = true;
-};
-
-const closeEditModal = () => {
-  showEditModal.value = false;
-};
-
 const openAddModal = () => {
   showAddModal.value = true;
 };
@@ -204,22 +212,6 @@ const addNewProduct = async () => {
   } catch (error) {
     console.error('Error al agregar producto:', error.message);
     notify('error', 'Error al agregar producto');
-  }
-};
-
-const saveProductChanges = async () => {
-  try {
-    const updatedProduct = await actualizarProducto(editProductData.value._id, editProductData.value);
-    const index = products.value.findIndex(p => p._id === editProductData.value._id);
-    if (index !== -1) {
-      products.value[index] = updatedProduct;
-    }
-    showEditModal.value = false;
-    console.log(updatedProduct);
-    notify('success', 'Producto actualizado exitosamente');
-  } catch (error) {
-    console.error('Error al guardar cambios:', error.message);
-    notify('error', 'Error al guardar cambios');
   }
 };
 
@@ -270,6 +262,80 @@ onMounted(fetchProducts);
 
 
 <style>
+.error-message {
+  color: red;
+  margin-top: 5px;
+  font-size: 12px;
+}
+/* Estilos para el modal de edición y el modal de agregar nuevo producto */
+.modal {
+  display: none; /* Ocultamos el modal por defecto */
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content {
+  background-color: #fefefe;
+  margin: 10% auto;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 50%;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Agregamos sombra */
+}
+
+.close {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.close:hover,
+.close:focus {
+  color: black;
+  text-decoration: none;
+}
+
+/* Estilos para el formulario dentro del modal */
+.form-container {
+  display: grid;
+  gap: 15px;
+}
+
+.form-container label {
+  font-weight: bold;
+}
+
+.form-container input[type="text"],
+.form-container input[type="number"] {
+  width: calc(100% - 20px);
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.form-container button[type="submit"] {
+  width: 100%;
+  padding: 10px;
+  border: none;
+  border-radius: 4px;
+  background-color: #007bff;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.form-container button[type="submit"]:hover {
+  background-color: #0056b3;
+}
 .icon-button {
   background-color: transparent;
   border: none;
@@ -283,8 +349,8 @@ onMounted(fetchProducts);
 }
 
 .product-container {
-  width: 80%;
-  margin: auto;
+  margin-left: -320px;
+  width: 90%;
   padding: 20px;
 }
 
@@ -335,6 +401,7 @@ th, td {
   border: 1px solid #ddd;
   padding: 12px;
   text-align: left;
+  width: 100px; 
 }
 
 th {
@@ -423,4 +490,3 @@ th:hover {
   }
 }
 </style>
-
