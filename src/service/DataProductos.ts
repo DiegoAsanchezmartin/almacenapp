@@ -15,13 +15,22 @@ export async function obtenerProductos() {
 }
 
 // Función para crear un nuevo producto en el almacén
+// export async function crearProducto(producto: any) {
+//   try {
+//     const response = await axios.post(`${BASE_URL}(/productosg`, producto);
+//     return response.data;
+//   } catch (error: any) {
+//     throw new Error(`Error al crear el producto: ${error.message}`);
+//   }
+// }
+// Función para crear un nuevo producto en el almacén
 export async function crearProducto(producto: any) {
   try {
-    const response = await axios.post(`${BASE_URL}(/productosg`, producto);
+    const response = await axios.post(`${BASE_URL}/productosg`, producto);
     return response.data;
   } catch (error: any) {
     throw new Error(`Error al crear el producto: ${error.message}`);
-  }
+  }
 }
 
 // Función para actualizar un producto existente en el almacén
